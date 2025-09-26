@@ -1,0 +1,21 @@
+services:
+  apointo-api:
+    build:
+      context: .
+      dockerfile: src/Apointo.Api/Dockerfile
+    env_file:
+      - .env.docker
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - seq
+
+  seq:
+    image: datalust/seq:2024.4
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5341:80"
