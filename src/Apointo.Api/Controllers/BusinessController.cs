@@ -59,9 +59,9 @@ public sealed class BusinessController : ControllerBase
     {
         return result.Error switch
         {
-            "BusinessNotFound" => NotFound(CreateProblemDetails(result.Error, "Business kaydı bulunamadı.", StatusCodes.Status404NotFound)),
-            "InvalidOperatingHours" => BadRequest(CreateProblemDetails(result.Error, "Çalışma saatleri geçersiz.", StatusCodes.Status400BadRequest)),
-            _ => Problem(detail: "Beklenmeyen bir hata oluştu.")
+            "BusinessNotFound" => NotFound(CreateProblemDetails(result.Error, "Business kaydÄ± bulunamadÄ±.", StatusCodes.Status404NotFound)),
+            "InvalidOperatingHours" => BadRequest(CreateProblemDetails(result.Error, "Ã‡alÄ±ÅŸma saatleri geÃ§ersiz.", StatusCodes.Status400BadRequest)),
+            _ => Problem(detail: "Beklenmeyen bir hata oluÅŸtu.")
         };
     }
 
