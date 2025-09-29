@@ -9,7 +9,7 @@ public sealed class StaffConfiguration : IEntityTypeConfiguration<Staff>
 {
     public void Configure(EntityTypeBuilder<Staff> builder)
     {
-        builder.ToTable("Staff", "Core");
+        builder.ToTable("Staff", "dbo");
 
         builder.Property(s => s.FirstName)
             .HasMaxLength(128)

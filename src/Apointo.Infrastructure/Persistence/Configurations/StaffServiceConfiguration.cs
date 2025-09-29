@@ -9,7 +9,7 @@ public sealed class StaffServiceConfiguration : IEntityTypeConfiguration<StaffSe
 {
     public void Configure(EntityTypeBuilder<StaffService> builder)
     {
-        builder.ToTable("StaffServices", "Core");
+        builder.ToTable("StaffServices", "dbo");
 
         builder.HasIndex(ss => new { ss.StaffId, ss.ServiceId })
             .IsUnique();

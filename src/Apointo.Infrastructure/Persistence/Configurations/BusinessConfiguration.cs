@@ -9,7 +9,7 @@ public sealed class BusinessConfiguration : IEntityTypeConfiguration<Business>
 {
     public void Configure(EntityTypeBuilder<Business> builder)
     {
-        builder.ToTable("Businesses", "Core");
+        builder.ToTable("Businesses", "dbo");
 
         builder.Property(b => b.Name)
             .HasMaxLength(256)
@@ -56,7 +56,7 @@ public sealed class BusinessConfiguration : IEntityTypeConfiguration<Business>
 
         builder.OwnsMany(b => b.OperatingHours, hoursBuilder =>
         {
-            hoursBuilder.ToTable("BusinessOperatingHours", "Core");
+            hoursBuilder.ToTable("BusinessOperatingHours", "dbo");
             hoursBuilder.WithOwner().HasForeignKey("BusinessId");
 
             hoursBuilder.Property<int>("Id");

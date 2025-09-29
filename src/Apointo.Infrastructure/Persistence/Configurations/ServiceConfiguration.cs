@@ -8,7 +8,7 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
 {
     public void Configure(EntityTypeBuilder<Service> builder)
     {
-        builder.ToTable("Services", "Core");
+        builder.ToTable("Services", "dbo");
 
         builder.Property(s => s.Name)
             .HasMaxLength(256)

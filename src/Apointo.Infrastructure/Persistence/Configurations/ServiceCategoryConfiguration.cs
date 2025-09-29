@@ -9,7 +9,7 @@ public sealed class ServiceCategoryConfiguration : IEntityTypeConfiguration<Serv
 {
     public void Configure(EntityTypeBuilder<ServiceCategory> builder)
     {
-        builder.ToTable("ServiceCategories", "Core");
+        builder.ToTable("ServiceCategories", "dbo");
 
         builder.Property(c => c.Name)
             .HasMaxLength(256)

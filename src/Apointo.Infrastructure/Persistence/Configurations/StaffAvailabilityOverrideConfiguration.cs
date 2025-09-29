@@ -8,7 +8,7 @@ public sealed class StaffAvailabilityOverrideConfiguration : IEntityTypeConfigur
 {
     public void Configure(EntityTypeBuilder<StaffAvailabilityOverride> builder)
     {
-        builder.ToTable("StaffAvailabilityOverrides", "Core");
+        builder.ToTable("StaffAvailabilityOverrides", "dbo");
 
         builder.Property(o => o.Date)
             .HasColumnType("date")

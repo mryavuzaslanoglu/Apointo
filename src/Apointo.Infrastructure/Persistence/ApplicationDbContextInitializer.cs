@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Apointo.Domain.Businesses;
 using Apointo.Domain.Businesses.ValueObjects;
 using Apointo.Domain.Identity;
+using Apointo.Domain.Services;
+using Apointo.Domain.Staff;
 using Apointo.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +20,10 @@ public sealed class ApplicationDbContextInitializer
     {
         ("admin@apointo.dev", "Admin!123", "System", "Admin", RoleNames.Admin),
         ("staff@apointo.dev", "Staff!123", "Default", "Staff", RoleNames.Staff),
-        ("customer@apointo.dev", "Customer!123", "Default", "Customer", RoleNames.Customer)
+        ("customer@apointo.dev", "Customer!123", "Default", "Customer", RoleNames.Customer),
+        ("mehmet@gmail.com", "MehmetYilmaz!123", "Mehmet", "Yılmaz", RoleNames.Customer),
+        ("ayse@gmail.com", "AyseKaya!123", "Ayşe", "Kaya", RoleNames.Customer),
+        ("ali@gmail.com", "AliDemir!123", "Ali", "Demir", RoleNames.Customer)
     };
 
     private const string DefaultBusinessName = "Apointo Varsayılan İşletme";
@@ -53,7 +58,10 @@ public sealed class ApplicationDbContextInitializer
     {
         await EnsureRolesAsync();
         await EnsureDefaultUsersAsync();
-        await EnsureDefaultBusinessAsync(cancellationToken);
+        var business = await EnsureDefaultBusinessAsync(cancellationToken);
+        await EnsureServiceCategoriesAsync(business.Id, cancellationToken);
+        await EnsureServicesAsync(business.Id, cancellationToken);
+        await EnsureStaffAsync(business.Id, cancellationToken);
     }
 
     private async Task EnsureRolesAsync()
@@ -105,11 +113,12 @@ public sealed class ApplicationDbContextInitializer
         }
     }
 
-    private async Task EnsureDefaultBusinessAsync(CancellationToken cancellationToken)
+    private async Task<Business> EnsureDefaultBusinessAsync(CancellationToken cancellationToken)
     {
-        if (await _context.Businesses.AnyAsync(cancellationToken))
+        var existingBusiness = await _context.Businesses.FirstOrDefaultAsync(cancellationToken);
+        if (existingBusiness is not null)
         {
-            return;
+            return existingBusiness;
         }
 
         var defaultHours = Enum.GetValues<DayOfWeek>()
@@ -135,5 +144,76 @@ public sealed class ApplicationDbContextInitializer
         await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Seed business entity created with name {Name}", DefaultBusinessName);
+        return business;
+    }
+
+    private async Task EnsureServiceCategoriesAsync(Guid businessId, CancellationToken cancellationToken)
+    {
+        if (await _context.ServiceCategories.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        var categories = new[]
+        {
+            ServiceCategory.Create(businessId, "Saç Bakımı", "Saç kesimi, şekillendirme ve bakım hizmetleri", 1),
+            ServiceCategory.Create(businessId, "Sakal & Bıyık", "Sakal kesimi, şekillendirme ve bakım hizmetleri", 2),
+            ServiceCategory.Create(businessId, "Cilt Bakımı", "Yüz bakımı ve cilt temizlik hizmetleri", 3)
+        };
+
+        await _context.ServiceCategories.AddRangeAsync(categories, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Seed service categories created: {Count} categories", categories.Length);
+    }
+
+    private async Task EnsureServicesAsync(Guid businessId, CancellationToken cancellationToken)
+    {
+        if (await _context.Services.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        var categories = await _context.ServiceCategories.ToListAsync(cancellationToken);
+        var hairCategory = categories.First(c => c.Name == "Saç Bakımı");
+        var beardCategory = categories.First(c => c.Name == "Sakal & Bıyık");
+        var skinCategory = categories.First(c => c.Name == "Cilt Bakımı");
+
+        var services = new[]
+        {
+            Service.Create(businessId, hairCategory.Id, "Erkek Saç Kesimi", "Klasik erkek saç kesimi", 50.00m, 30, 5, true, "#FF6B6B"),
+            Service.Create(businessId, hairCategory.Id, "Saç Yıkama & Fön", "Şampuan, saç yıkama ve fön", 25.00m, 20, 5, true, "#4ECDC4"),
+            Service.Create(businessId, hairCategory.Id, "Saç Boyama", "Profesyonel saç boyama hizmeti", 120.00m, 90, 10, true, "#45B7D1"),
+            Service.Create(businessId, beardCategory.Id, "Sakal Kesimi", "Profesyonel sakal kesimi ve şekillendirme", 30.00m, 20, 5, true, "#96CEB4"),
+            Service.Create(businessId, beardCategory.Id, "Bıyık Şekillendirme", "Bıyık kesimi ve şekillendirme", 15.00m, 10, 5, true, "#FECA57"),
+            Service.Create(businessId, beardCategory.Id, "Sakal Bakımı", "Sakal yağı ve bakım ürünleri ile bakım", 40.00m, 25, 5, true, "#48CAE4"),
+            Service.Create(businessId, skinCategory.Id, "Yüz Temizliği", "Derin yüz temizliği ve peeling", 80.00m, 45, 10, true, "#FF9FF3"),
+            Service.Create(businessId, skinCategory.Id, "Yüz Maskesi", "Nemlendirici ve rahatlatıcı yüz maskesi", 60.00m, 30, 5, true, "#F38BA8")
+        };
+
+        await _context.Services.AddRangeAsync(services, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Seed services created: {Count} services", services.Length);
+    }
+
+    private async Task EnsureStaffAsync(Guid businessId, CancellationToken cancellationToken)
+    {
+        if (await _context.StaffMembers.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        var staff = new[]
+        {
+            Staff.Create(businessId, "Ahmet", "Yılmaz", "ahmet@apointo.dev", "+90 532 111 11 11", "Baş Berber", null, DateTime.UtcNow.AddMonths(-12)),
+            Staff.Create(businessId, "Mustafa", "Kaya", "mustafa@apointo.dev", "+90 532 222 22 22", "Berber", null, DateTime.UtcNow.AddMonths(-6)),
+            Staff.Create(businessId, "Oğuz", "Demir", "oguz@apointo.dev", "+90 532 333 33 33", "Berber", null, DateTime.UtcNow.AddMonths(-3))
+        };
+
+        await _context.StaffMembers.AddRangeAsync(staff, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Seed staff created: {Count} staff members", staff.Length);
     }
 }

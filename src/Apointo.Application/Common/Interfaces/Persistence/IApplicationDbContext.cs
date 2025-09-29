@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Apointo.Domain.Appointments;
 using Apointo.Domain.Businesses;
 using Apointo.Domain.Identity;
 using Apointo.Domain.Services;
@@ -17,6 +18,8 @@ public interface IApplicationDbContext
     DbSet<Service> Services { get; }
     DbSet<Apointo.Domain.Staff.StaffService> StaffServices { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<Appointment> Appointments { get; }
+    DbSet<AppointmentService> AppointmentServices { get; }
 
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

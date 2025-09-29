@@ -1,7 +1,9 @@
 using AutoMapper;
+using Apointo.Api.Contracts.Appointments;
 using Apointo.Api.Contracts.BusinessSettings;
 using Apointo.Api.Contracts.Services;
 using Apointo.Api.Contracts.Staff;
+using Apointo.Application.Appointments.Dtos;
 using Apointo.Application.Businesses.Commands.UpdateBusinessSettings;
 using Apointo.Application.Businesses.Dtos;
 using Apointo.Application.ServiceCatalog.Dtos;
@@ -28,5 +30,14 @@ public sealed class ApiMappingProfile : Profile
 
         CreateMap<ServiceCategoryDto, ServiceCategoryResponse>();
         CreateMap<ServiceDto, ServiceResponse>();
+
+        // Appointment mappings
+        CreateMap<AvailableSlotDto, AvailableSlotResponse>();
+        CreateMap<FindAvailableSlotsDto, FindAvailableSlotsResponse>();
+        CreateMap<AppointmentServiceDto, AppointmentServiceResponse>();
+        CreateMap<AppointmentDto, AppointmentResponse>();
+        CreateMap<CalendarAppointmentDto, CalendarAppointmentResponse>();
+        CreateMap<StaffCalendarInfoDto, StaffCalendarInfoResponse>();
+        CreateMap<CalendarViewDto, CalendarViewResponse>();
     }
 }

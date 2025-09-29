@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apointo.Application.Common.Interfaces;
 using Apointo.Application.Common.Interfaces.Persistence;
+using Apointo.Domain.Appointments;
 using Apointo.Domain.Businesses;
 using Apointo.Domain.Common;
 using Apointo.Domain.Identity;
@@ -34,27 +35,15 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, Ap
     public DbSet<Service> Services => Set<Service>();
     public DbSet<StaffService> StaffServices => Set<StaffService>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<AppointmentService> AppointmentServices => Set<AppointmentService>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.HasDefaultSchema("Identity");
-
-        foreach (var entityType in builder.Model.GetEntityTypes())
-        {
-            if (!typeof(IdentityUser<Guid>).IsAssignableFrom(entityType.ClrType) &&
-                !typeof(IdentityRole<Guid>).IsAssignableFrom(entityType.ClrType))
-            {
-                continue;
-            }
-
-            var currentTableName = entityType.GetTableName();
-            if (!string.IsNullOrWhiteSpace(currentTableName) && currentTableName.StartsWith("AspNet", StringComparison.Ordinal))
-            {
-                entityType.SetTableName(currentTableName[6..]);
-            }
-        }
+        // Tüm tablolar dbo schema'sında olsun
+        builder.HasDefaultSchema("dbo");
 
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }

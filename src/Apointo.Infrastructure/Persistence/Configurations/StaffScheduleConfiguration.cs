@@ -8,7 +8,7 @@ public sealed class StaffScheduleConfiguration : IEntityTypeConfiguration<StaffS
 {
     public void Configure(EntityTypeBuilder<StaffSchedule> builder)
     {
-        builder.ToTable("StaffSchedules", "Core");
+        builder.ToTable("StaffSchedules", "dbo");
 
         builder.Property(s => s.DayOfWeek)
             .IsRequired();
